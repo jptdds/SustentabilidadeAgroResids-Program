@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agroindústria - Sistema de Gestão</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #1a3a52 0%, #0f2438 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            font-size: 14px;
+            color: #666666;
+            font-weight: 400;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 32px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #999999;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+        }
+
+        .auth-tab.active {
+            color: #1a3a52;
+            border-bottom-color: #1a3a52;
+        }
+
+        .auth-tab:hover {
+            color: #1a3a52;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1a3a52;
+            box-shadow: 0 0 0 3px rgba(26, 58, 82, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #999999;
+        }
+
+        .form-error {
+            display: none;
+            background: #ffe0e0;
+            color: #c0392b;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid #c0392b;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-success {
+            display: none;
+            background: #e0ffe0;
+            color: #27ae60;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .form-success.show {
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #1a3a52;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #2d5a7b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 58, 82, 0.2);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #999999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-info {
+            font-size: 12px;
+            color: #999999;
+            margin-top: 12px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .form-info strong {
+            color: #1a1a1a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .password-requirements {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .password-requirements ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+        }
+
+        .password-requirements li {
+            margin: 4px 0;
+        }
+
+        .password-requirements li.valid {
+            color: #27ae60;
+        }
+
+        .password-requirements li.invalid {
+            color: #e74c3c;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            margin-top: 12px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 24px;
+            }
+
+            .auth-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Agroindústria</h1>
+                <p>Sistema de Gestão de Estoque</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Entrar</button>
+                <button class="auth-tab" onclick="switchTab('register')">Cadastro</button>
+            </div>
+
+            <!-- TAB LOGIN -->
+            <div id="login" class="tab-content active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-error" id="loginError"></div>
+                    <div class="form-success" id="loginSuccess"></div>
+
+                    <div class="form-group">
+                        <label>Email ou Usuário</label>
+                        <input type="text" id="loginUsername" placeholder="seu@email.com ou usuário" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="loginPassword" placeholder="Digite sua senha" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="loginBtn">Entrar</button>
+                    <div class="loading" id="loginLoading">Autenticando...</div>
+
+                    <div class="form-info">
+                        Não tem conta? <strong>Crie uma abaixo</strong>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB CADASTRO -->
+            <div id="register" class="tab-content">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-error" id="registerError"></div>
+                    <div class="form-success" id="registerSuccess"></div>
+
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="registerName" placeholder="Seu nome completo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" id="registerUsername" placeholder="Escolha um usuário (mínimo 4 caracteres)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="registerPassword" placeholder="Mínimo 8 caracteres" required onkeyup="checkPasswordStrength()">
+                        <div class="password-requirements">
+                            <strong>Requisitos:</strong>
+                            <ul>
+                                <li id="req-length" class="invalid">✓ Mínimo 8 caracteres</li>
+                                <li id="req-upper" class="invalid">✓ Pelo menos 1 letra maiúscula</li>
+                                <li id="req-lower" class="invalid">✓ Pelo menos 1 letra minúscula</li>
+                                <li id="req-number" class="invalid">✓ Pelo menos 1 número</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmar Senha</label>
+                        <input type="password" id="registerPasswordConfirm" placeholder="Confirme sua senha" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="registerBtn">Criar Conta</button>
+                    <div class="loading" id="registerLoading">Criando conta...</div>
+
+                    <div class="form-info">
+                        Ao se cadastrar, você concorda com nossos termos de uso.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+            
+            // Limpar mensagens
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('registerError').classList.remove('show');
+            document.getElementById('loginSuccess').classList.remove('show');
+            document.getElementById('registerSuccess').classList.remove('show');
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('registerPassword').value;
+            
+            const hasLength = password.length >= 8;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            
+            updateRequirement('req-length', hasLength);
+            updateRequirement('req-upper', hasUpper);
+            updateRequirement('req-lower', hasLower);
+            updateRequirement('req-number', hasNumber);
+        }
+
+        function updateRequirement(id, valid) {
+            const elem = document.getElementById(id);
+            if (valid) {
+                elem.classList.remove('invalid');
+                elem.classList.add('valid');
+            } else {
+                elem.classList.remove('valid');
+                elem.classList.add('invalid');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const loadingDiv = document.getElementById('loginLoading');
+            const btn = document.getElementById('loginBtn');
+            
+            errorDiv.classList.remove('show');
+            loadingDiv.classList.add('show');
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = '/';
+                } else {
+                    errorDiv.textContent = data.error || 'Erro ao fazer login. Verifique suas credenciais.';
+                    errorDiv.classList.add('show');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erro ao conectar ao servidor.';
+                errorDiv.classList.add('show');
+            } finally {
+                loadingDiv.classList.remove('show');
+                btn.disabled = false;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            const loadingDiv = document.getElementById('registerLoading');
+            const btn = document.getElementById('registerBtn');
+            
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+            
+            // Validações
+            if (username.length < 4) {
+                errorDiv.textContent = 'Usuário deve ter no mínimo 4 caracteres.';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (password.length < 8) {
+                errorDiv.textContent = 'Senha deve ter no mínimo 8 caracteres.';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                errorDiv.textContent = 'Senha deve conter maiúscula, minúscula e número.';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = 'As senhas não coincidem.';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            loadingDiv.classList.add('show');
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successDiv.textContent = 'Conta criada com sucesso! Você pode fazer login agora.';
+                    successDiv.classList.add('show');
+                    
+                    // Limpar formulário
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerPasswordConfirm').value = '';
+                    
+                    // Mudar para aba de login após 2 segundos
+                    setTimeout(() => {
+                        document.querySelector('[onclick="switchTab(\'login\')"]').click();
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error || 'Erro ao criar conta.';
+                    errorDiv.classList.add('show');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erro ao conectar ao servidor.';
+                errorDiv.classList.add('show');
+            } finally {
+                loadingDiv.classList.remove('show');
+                btn.disabled = false;
+            }
+        }
+
+        // Verificar se já está logado
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>

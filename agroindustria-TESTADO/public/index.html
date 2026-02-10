@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque - Agroindústria</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🌾 Estoque</h1>
+                <p>Agroindústria</p>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="showPage('dashboard')">
+                    <span class="icon">📊</span> Dashboard
+                </button>
+                <button class="nav-item" onclick="showPage('materials')">
+                    <span class="icon">📦</span> Matérias-Primas
+                </button>
+                <button class="nav-item" onclick="showPage('entry')">
+                    <span class="icon">📥</span> Entrada de Estoque
+                </button>
+                <button class="nav-item" onclick="showPage('suppliers')">
+                    <span class="icon">🏭</span> Fornecedores
+                </button>
+                <button class="nav-item" onclick="showPage('movements')">
+                    <span class="icon">🔄</span> Movimentações
+                </button>
+                <button class="nav-item" onclick="showPage('reports')">
+                    <span class="icon">📈</span> Relatórios
+                </button>
+                <button class="nav-item" onclick="showPage('alerts')">
+                    <span class="icon">⚠️</span> Alertas
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="loadDashboard()">🔄 Atualizar</button>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span id="userInfo" style="font-size: 14px; color: #666;">👤 Usuário</span>
+                        <button class="btn-secondary" onclick="logout()" style="padding: 8px 16px; font-size: 13px;">🚪 Sair</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Page -->
+            <section id="dashboard" class="page active">
+                <div class="dashboard-grid">
+                    <div class="card kpi">
+                        <div class="kpi-icon">📦</div>
+                        <div class="kpi-content">
+                            <h3>Total de Matérias-Primas</h3>
+                            <p class="kpi-value" id="totalMaterials">0</p>
+                        </div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-content">
+                            <h3>Estoque Total</h3>
+                            <p class="kpi-value" id="totalStock">0</p>
+                        </div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-icon">⚠️</div>
+                        <div class="kpi-content">
+                            <h3>Alertas Críticos</h3>
+                            <p class="kpi-value alert" id="criticalAlerts">0</p>
+                        </div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-icon">🏭</div>
+                        <div class="kpi-content">
+                            <h3>Fornecedores</h3>
+                            <p class="kpi-value" id="totalSuppliers">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Últimas Entradas</h3>
+                        <table class="table" id="latestEntries">
+                            <thead>
+                                <tr>
+                                    <th>Matéria-Prima</th>
+                                    <th>Quantidade</th>
+                                    <th>Fornecedor</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Matérias-Primas Page -->
+            <section id="materials" class="page">
+                <div class="page-header">
+                    <h3>Gestão de Matérias-Primas</h3>
+                    <button class="btn-primary" onclick="openMaterialForm()">+ Nova Matéria-Prima</button>
+                </div>
+
+                <div class="card">
+                    <table class="table" id="materialsTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Estoque Atual</th>
+                                <th>Mínimo</th>
+                                <th>Máximo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Entrada de Estoque Page -->
+            <section id="entry" class="page">
+                <div class="page-header">
+                    <h3>Entrada de Estoque</h3>
+                    <button class="btn-primary" onclick="openEntryForm()">+ Novo Recebimento</button>
+                </div>
+
+                <div class="card">
+                    <table class="table" id="entriesTable">
+                        <thead>
+                            <tr>
+                                <th>Matéria-Prima</th>
+                                <th>Quantidade</th>
+                                <th>Lote</th>
+                                <th>Fornecedor</th>
+                                <th>Data</th>
+                                <th>Vencimento</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Fornecedores Page -->
+            <section id="suppliers" class="page">
+                <div class="page-header">
+                    <h3>Gestão de Fornecedores</h3>
+                    <button class="btn-primary" onclick="openSupplierForm()">+ Novo Fornecedor</button>
+                </div>
+
+                <div class="card">
+                    <table class="table" id="suppliersTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>CNPJ</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Movimentações Page -->
+            <section id="movements" class="page">
+                <div class="page-header">
+                    <h3>Histórico de Movimentações</h3>
+                </div>
+
+                <div class="card">
+                    <table class="table" id="movementsTable">
+                        <thead>
+                            <tr>
+                                <th>Matéria-Prima</th>
+                                <th>Tipo</th>
+                                <th>Quantidade</th>
+                                <th>Motivo</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Relatórios Page -->
+            <section id="reports" class="page">
+                <div class="page-header">
+                    <h3>Relatórios</h3>
+                </div>
+
+                <div class="card">
+                    <div class="filters">
+                        <input type="date" id="reportStartDate" placeholder="Data Inicial">
+                        <input type="date" id="reportEndDate" placeholder="Data Final">
+                        <select id="reportMaterial">
+                            <option value="">Todas as Matérias-Primas</option>
+                        </select>
+                        <button class="btn-primary" onclick="generateReport()">Gerar Relatório</button>
+                        <button class="btn-secondary" onclick="exportCSV()">📥 Exportar CSV</button>
+                    </div>
+
+                    <table class="table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Matéria-Prima</th>
+                                <th>Tipo</th>
+                                <th>Quantidade</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Alertas Page -->
+            <section id="alerts" class="page">
+                <div class="page-header">
+                    <h3>Alertas de Estoque</h3>
+                    <button class="btn-primary" onclick="checkAlerts()">🔍 Verificar Alertas</button>
+                </div>
+
+                <div class="card">
+                    <table class="table" id="alertsTable">
+                        <thead>
+                            <tr>
+                                <th>Matéria-Prima</th>
+                                <th>Tipo</th>
+                                <th>Mensagem</th>
+                                <th>Estoque Atual</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Forms -->
+    <div id="materialModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMaterialForm()">&times;</span>
+            <h2>Nova Matéria-Prima</h2>
+            <form onsubmit="saveMaterial(event)">
+                <input type="text" id="materialName" placeholder="Nome" required>
+                <input type="text" id="materialCategory" placeholder="Categoria" required>
+                <input type="text" id="materialUnit" placeholder="Unidade (kg, l, un)" required>
+                <input type="number" id="materialMinStock" placeholder="Estoque Mínimo" required>
+                <input type="number" id="materialMaxStock" placeholder="Estoque Máximo" required>
+                <input type="number" id="materialUnitCost" placeholder="Custo Unitário" step="0.01">
+                <button type="submit" class="btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEntryForm()">&times;</span>
+            <h2>Entrada de Estoque</h2>
+            <form onsubmit="saveEntry(event)">
+                <select id="entryMaterial" required>
+                    <option value="">Selecione a Matéria-Prima</option>
+                </select>
+                <select id="entrySupplier" required>
+                    <option value="">Selecione o Fornecedor</option>
+                </select>
+                <input type="number" id="entryQuantity" placeholder="Quantidade" step="0.01" required>
+                <input type="text" id="entryLot" placeholder="Número do Lote" required>
+                <input type="date" id="entryDate" required>
+                <input type="date" id="entryExpiry" placeholder="Data de Vencimento">
+                <input type="number" id="entryUnitCost" placeholder="Custo Unitário" step="0.01">
+                <textarea id="entryNotes" placeholder="Observações"></textarea>
+                <button type="submit" class="btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSupplierForm()">&times;</span>
+            <h2>Novo Fornecedor</h2>
+            <form onsubmit="saveSupplier(event)">
+                <input type="text" id="supplierName" placeholder="Nome da Empresa" required>
+                <input type="email" id="supplierEmail" placeholder="Email" required>
+                <input type="tel" id="supplierPhone" placeholder="Telefone" required>
+                <input type="text" id="supplierCNPJ" placeholder="CNPJ" required>
+                <input type="text" id="supplierAddress" placeholder="Endereço">
+                <input type="text" id="supplierCity" placeholder="Cidade">
+                <input type="text" id="supplierState" placeholder="Estado">
+                <button type="submit" class="btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
